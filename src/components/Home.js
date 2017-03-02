@@ -7,66 +7,59 @@ import {
   TouchableHighlight,
   TouchableOpacity,
   ToolbarAndroid,
-  Picker,
   AsyncStorage
 } from 'react-native';
+import {
+  Spinner,Picker,Grid,Row,H1 ,
+  Container, Header, Title, Content,
+  Footer, FooterTab, Button, Left,
+  Right, Body, Icon
+} from 'native-base';
+import SideBar from './sideBar'
 import Dimensions from 'Dimensions'
 import LocationsListView from './LocationsListView'
 import TabBar from './TabBar'
 import CampusMapView from './CampusMapView'
 import SearchBar from './SearchBar'
-import Icon from 'react-native-vector-icons/Ionicons';
-import cacheApi from '../api/cache';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 const Item = Picker.Item;
 
 export default class Home extends Component {
   constructor()
   {
     super()
-    this.renderScene = this.renderScene.bind(this)
-    // this.onPick = this.onPick.bind(this)
+    this.renderScene   = this.renderScene.bind(this)
+    this.goTo          = this.goTo.bind(this)
+    this.onValueChange = this.onValueChange.bind(this)
     this.Routes = [
       {title: 'List View', index: 0},
     ];
+    this.state = {
+      selected: 'osu',
+      startNavigation:null
+    }
   }
   onPick(navigator)
   {
-    // navigator.push({
-    //   index: 1,
-    // })
-    try {
-     async AsyncStorage.setItem('@CampusMap:firstTime1', '1');
-    } catch (error) {
-      // Error saving data
-    }
+    //
+    // try {
+    //   AsyncStorage.setItem('@CampusMap:firstTime1', '1');
+    //   navigator.push({
+    //     index: 1,
+    //   })
+    //   this.goTo()
+    // } catch (error) {
+    //   // Error saving data
+    //   console.error(error);
+    // }
   }
   renderScene(route,navigator)
   {
     var index = route.index;
 
-    //TODO: first time login should see another View
-    // The view will force the user to pick a University from a drop down list
-    if (index == -100)
+    if(index==-1)
     {
-      try {
-        const value = async AsyncStorage.getItem('@CampusMap:firstTime1');
-        if (value !== null){
-          // We have data!!
-          console.log(value);
-          index = index + 1;
-          console.log(value);
-        }
-      } catch (error) {
-        // Error retrieving data
-      }
-      //1. check if cache exists
-      //    create one if does not exist
-      //2.  upon cahce existing set increment index
-
-    }
-
-    if(index==0)
-    {
+      // This view is not used. Will be removed after completing the home page
       return (
         <View style={styles.firstcontainer}>
           <View style={styles.flex1}>
@@ -88,11 +81,11 @@ export default class Home extends Component {
         </View>
       )
     }
-    else if(index == 1)
+    else if(index == 0)
     {
       return (
         <View style={{flex:1}}>
-          <Icon.ToolbarAndroid
+          <Ionicons.ToolbarAndroid
             style={styles.toolbar}
             title="Home"
             titleColor="white"
@@ -110,7 +103,7 @@ export default class Home extends Component {
     {
       return(
         <View style={{flex:1}}>
-          <Icon.ToolbarAndroid
+          <Ionicons.ToolbarAndroid
             style={styles.toolbar}
             title={route.title}
             titleColor="white"
@@ -127,14 +120,115 @@ export default class Home extends Component {
       )
     }
   }
+  onValueChange (value: string) {
+    this.setState({
+        selected : value
+    });
+  }
+  goTo()
+  {
+    try {
+      AsyncStorage.setItem('@CampusMap:firstTime', '1');
+      this.setState({
+        startNavigation:true
+      })
+    } catch (error) {
+      // Error saving data
+      console.error(error);
+      //display error can't go on
+    }
+
+  }
+  componentWillMount()
+  {
+    try {
+      const value =  AsyncStorage.getItem('@CampusMap:firstTime').then( (value) => {
+        if(value!=null)
+        {
+          this.setState({
+            startNavigation:true
+          })
+        }
+        else {
+          this.setState({
+            startNavigation:false
+          })
+        }
+      })
+    } catch (error) {
+      // Error retrieving data
+      console.error(error);
+    }
+  }
   render() {
-    return (
-      <Navigator
-        initialRouteStack={this.Routes}
-        renderScene={this.renderScene}
-        configureScene={(route, routeStack) => Navigator.SceneConfigs.FadeAndroid}
-      />
-    );
+
+    const {startNavigation} = this.state
+    if(startNavigation==true)
+    {
+      return (
+        <Navigator
+          initialRouteStack={this.Routes}
+          renderScene={this.renderScene}
+          configureScene={(route, routeStack) => Navigator.SceneConfigs.FadeAndroid}
+        />
+      );
+    }
+    else if(startNavigation==false){
+      return(
+        <Container>
+            <Header>
+                <Body>
+                    <Title>Campus Map</Title>
+                </Body>
+                <Right />
+            </Header>
+
+            <Content >
+              <Grid>
+                  <Row style={{ backgroundColor: '#635DB7', height: 200 }}>
+                    <Text style={styles.mainContent}>Welcome To Campus Map</Text>
+                  </Row>
+                  <Row style={{ backgroundColor: '#00CE9F',height: 50}}>
+                    <Text style={styles.mainContent}>Please pick a University</Text>
+                  </Row>
+                  <Picker
+                      iosHeader="Select one"
+                      mode="dropdown"
+                      selectedValue={this.state.selected}
+                      onValueChange={(value) => {this.onValueChange(value)}}>
+                      <Item label="Oregon State University" value="osu" />
+                      <Item label="ATM Card" value="key1" />
+                      <Item label="Debit Card" value="key2" />
+                      <Item label="Credit Card" value="key3" />
+                      <Item label="Net Banking" value="key4" />
+                 </Picker>
+
+              </Grid>
+
+            </Content>
+
+            <Footer>
+                <FooterTab>
+                    <Button full onPress={this.goTo}>
+                        <H1>Save</H1>
+                    </Button>
+
+                </FooterTab>
+            </Footer>
+        </Container>
+      )
+    }
+    else {
+      return(
+        <Container>
+            <Content>
+                <Spinner color='blue' />
+            </Content>
+        </Container>
+      )
+    }
+
+
   }
 }
 
@@ -183,6 +277,14 @@ const styles = StyleSheet.create({
     borderRadius:10,
     borderColor:'green',
     borderStyle:'solid'
+  },
+  mainContent:{
+    textAlign:'center',
+    fontSize:25,
+    fontWeight:'bold',
+  },
+  pickerItem:{
+    width:300
   }
 
 });
