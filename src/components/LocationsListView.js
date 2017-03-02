@@ -98,19 +98,20 @@ class LocationsListView extends Component {
           <Text style={styles.noMessageText}>Please Start Searching</Text>
         </View>
       )
-    }else{
+    }
+    else{
       return this._renderPlaceholderView()
     }
 
     return (
       <View style={{flex:1}}>
         <ListView
-          dataSource={this.state.ds.cloneWithRows(searchResult.results)}
+          dataSource={this.state.ds.cloneWithRows(buildingsSearchResult.results)}
           renderRow={this.renderRow}
-          contentContainerStyle={StyleSheet.flatten([styles.container, {}])}
-          enableEmptySections={true}
-          renderSeparator={this._renderSeparator}
-          renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+          // contentContainerStyle={StyleSheet.flatten([styles.container, {}])}
+          // enableEmptySections={true}
+          // renderSeparator={this._renderSeparator}
+          // renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
         />
       </View>
     );
