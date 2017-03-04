@@ -55,9 +55,13 @@ class CampusMapView extends React.Component {
     //navigator.geolocation.clearWatch(this.watchID);
   }
   componentDidMount() {
-    InteractionManager.runAfterInteractions(() => {
-      this.setState({renderPlaceholderOnly: false});
-    });
+    setTimeout( () => {
+        this.setState({renderPlaceholderOnly: false});
+    }, 4400);
+    //   InteractionManager.runAfterInteractions(() => {
+    //     this.setState({renderPlaceholderOnly: false});
+    // });
+
 
     // Get geolocation API
     // navigator.geolocation.getCurrentPosition(
@@ -103,7 +107,7 @@ class CampusMapView extends React.Component {
 
      if(locationResult.__status == "pending")
      {
-       return null;
+       //return null;
        return this._renderPlaceholderView()
      }
      else if(locationResult.__status =="complete")
@@ -119,6 +123,8 @@ class CampusMapView extends React.Component {
         latitude = parseFloat(myobj.marker_location[1])
         longitude = parseFloat(myobj.marker_location[0])
         title= myobj.name
+        console.log('longitude:'+latitude);
+        console.log('longitude'+longitude);
      }
      else if(locationResult.__status =="error")
      {
@@ -131,12 +137,13 @@ class CampusMapView extends React.Component {
          </View>
        )
      }else{
-       return null
+       //return null
        return this._renderPlaceholderView()
      }
-     //console.log(this.refs);
+
+
      return (
-       <View style ={styles.container}>
+
          <MapView
            style={styles.map}
            region={{
@@ -163,7 +170,6 @@ class CampusMapView extends React.Component {
           >
           </MapView.Marker>
          </MapView>
-       </View>
      );
    }
 }
