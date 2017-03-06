@@ -15,7 +15,7 @@ import {
   Footer, FooterTab, Button, Left,
   Right, Body, Icon
 } from 'native-base';
-import SideBar from './sideBar'
+// import SideBar from './sideBar'
 import Dimensions from 'Dimensions'
 import LocationsListView from './LocationsListView'
 import TabBar from './TabBar'
